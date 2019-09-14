@@ -1,0 +1,45 @@
+queries
+
+create new applicant
+update applicant: set interview appointment
+delete applicant
+
+create new employee:
+	move data from applicant to employee, fill in the remaining employee fields, then delete the applicant
+
+delete employees: to wipe records of "terminated" employees. remove all complaints against them as well. "active" employees should not be deleted in this way
+
+update employee: 
+	to change position
+	to change compensation details(in this case )
+	to change banking details
+	to change address and/or contact details
+	to change employee_status to <type of termination>:<date of termination> from active
+		remove compensation, tax, address. change position to "terminated"/null
+
+add new position
+delete position: (if no employees in db hold this position)
+
+add new absence
+
+add new appointment
+	add new appointment record for each employee specified to attend the meeting.
+	if an employee is invited later, add new record with their staff_ID and the existing date-time and description
+cancel appointment:
+	either delete all appointment records with the same date-time and description(i.e cancel the whole meeting)
+	or delete the appointment record at the date-time with the description for one employee(i.e remove one employee from the meeting)
+update appointment:
+	change date-time
+
+
+display all protected employees in a department(subquery)
+display all active employees in a department(subquery)
+	order by name(first, last) 
+	order by position
+
+display all applicants for a position
+	order by the proportion of the race,gender,disability status of the applicant in the department*
+
+
+display race and the average salary of employees, grouped by race(aggregation)
+display gender and the average salary of employees, grouped by gender(aggregation)
