@@ -1,0 +1,56 @@
+addApplicant(string  ID, string fName, string lName, string phoneNum, string email, string street, string city, string postCode, string position,string resumeAddress, string race, string gender, boolean isDisabled){
+	if !verifyID(ID)
+		msgbox("invalid ID")
+		return
+
+	if blacklisted(ID)
+		msgbox("this applicant has previously been blacklisted. applications from this applicant are permanently prohibited")
+
+	if !verifyPhone(phoneNum)
+		msgbox("invalid phone number")
+		return
+
+	if !formattedStreet(street)
+		msgbox("invalid street address")
+		return
+	try{
+		SQL.addParams(@ID, ID)
+		SQL.addParams @fName, fName)
+		SQL.addParams(@lName, lName)
+		SQL.addParams(@phoneNum,phoneNum)
+		SQL.addParams(@email, email)
+		SQL.addParams @street, street)
+		SQL.addParams(@city, city)
+		SQL.addParams(@postCode,postCode)
+		SQL.addParams(@position, position)
+		SQL.addParams @resumeAddress, resumeAddress)
+		SQL.addParams(@race, race)
+		SQL.addParams(@gender,gender)
+		SQL.addParams(@isDisabled, isDisabled)
+
+
+		SQL.execQuery("INSERT INTO Applicant Values(@ID,@fName,@lName,@phoneNum,@email,@street,@city,@postCode,@position,@resumeAddress,@race,@gender,@isDisabled);")
+		msgbox("applicant has been successfully added")
+	}
+
+	catch exception {
+		msgBox( "something went wrong" )
+	}
+	
+}
+
+
+removeApplicant(string ID){
+	if !verifyID(ID)
+		msgbox("invalid ID")
+		return
+	try{
+		SQL.addParams(@ID, ID);
+
+		SQL.execQuery("DELETE FROM Applicant WHERE ")
+	}
+	catch exception{
+		msgBox( "something went wrong" )
+	}
+}
+
