@@ -1,0 +1,26 @@
+Imports System.Net.Mail
+
+
+public Sub emailfunction(subjectline As String , emailtext as string, toaddress as string , fromaddress as string, passwod as string)
+	 Try
+         Dim Smtp_Server As New SmtpClient
+         Dim e_mail As New MailMessage()
+         Smtp_Server.UseDefaultCredentials = False
+         Smtp_Server.Credentials = New Net.NetworkCredential(fromaddress, password)
+         Smtp_Server.Port = 587
+         Smtp_Server.EnableSsl = True
+         Smtp_Server.Host = "smtp.gmail.com"
+
+         e_mail = New MailMessage()
+         e_mail.From = New MailAddress(fromaddress)
+         e_mail.To.Add(toaddress)
+         e_mail.Subject = subjectLine
+         e_mail.IsBodyHtml = False
+         e_mail.Body = emailtext
+         Smtp_Server.Send(e_mail)
+         MsgBox("Mail Sent")
+
+      Catch error_t As Exception
+         MsgBox(error_t.ToString)
+      End Try
+end Sub
