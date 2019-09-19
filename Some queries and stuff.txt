@@ -1,0 +1,117 @@
+a rough representation of the sql queires we need
+
+//select only active employees: for adding to appointments, editing details, filing complaints
+select *-employee_status from employee where employee_status = active
+
+//select all applicants by department
+select *  from applicant where position_ID in(select position_ID from position where department = @dept) 
+
+HIRING PROCESSES
+//adding an applicant
+If exists(select * from applicant where ID = @id)
+begin
+	update applicant set 
+		phone_num = @phoneNum
+		email = @email
+		street_det = @street
+		city = @city
+		post_code = @post_code
+		disability_status = @disability
+		resume = @resume
+		
+	
+	where ID = @id
+end
+else
+begin
+	insert into applicant values(@id, @Fname, @Lname, @........)
+end
+
+//add a resume to an applicant
+	update applicant set resume = @resume
+	where ID = @id
+
+//attach an appointment to an applicant
+	update applicant set appointment_ID = @aptID
+	where ID = @id
+
+//delete an applicant
+delete from applicant where ID = @id
+
+//hire an employee
+If exists(select * from employee where EmployeeID = @applicant_id)
+begin
+	update employee set 
+		salary = @salary
+		position = @position
+		.......
+		
+	
+	where ID = @id
+end
+else
+begin
+	insert into employee values(@id, @Fname, @Lname, @........);
+	update employee set 
+		salary = @salary
+		......
+end
+update position set (num_available = num_available - 1) where positionID = @position 
+
+
+
+TERMINATION PROCESSES
+
+//select only terminated employees for termination history
+select* from employee where not employee_status= active
+
+//terminate an employee
+	//remove them from appointments
+delete from appt_guest where Employee_ID = @id
+
+	//change employed status
+update employee set
+	employee_status = @terminationType
+	termination_date = @terminationdate
+where employee_ID = @id
+	
+
+//delete terminated employees
+delete from complaints where employee_ID in (select employee_ID from employee where not employee_status = active);
+Update payments set employee_ID = NULL
+where employee_ID in (select employee_ID from employee where not employee_status = active);//unless we remove the payments table
+delete from employee where not employee_status = active;
+
+APPOINTMENTS
+//add new appointment: one use is when setting the interview appointment for an applicant.this will execute just before  the "//attach an appointment to an applicant" code
+	>check that the input times do not coincide with existing appointments
+	insert into appointment values(......)
+	>go to employee table,filtered to only show id,fname,lname , and only for active employees. 
+	>on btn add_to_appt click:
+	insert into appt_guest values @EntryNum,@appt_ID,@employee_ID
+
+	>send emails
+
+
+//change appt details
+> go to appointments form
+>when user clicks an appointment, changes details and clicks done:
+	update appointment set start_date = @startDate, end_date = @endDate where appointment_number = @aptNum
+
+>if the user clicks remove guest button, go to a reduced employee form:
+select ID,fname,lname from employee where ID in (select employee_ID from appt_guest where appointment_number = @aptNum)
+	>when the user clicks an employee and clicks the uninvite button:
+		select email from employee where ID = @ID
+		>add these to an array UNINVITED
+		delete from appt_guest where appointment_number = @aptNum AND employee_ID = @ID
+	>when the user clicks the done button go to the appointment form
+>if the user clicks add guest button, go to a reduced employee form:
+select ID,fname,lname from employee where not ID in (select employee_ID from appt_guest where appointment_number = @aptNum)
+	>when the user clicks an employee and clicks the invite button:
+		insert into appt_guest values (@entryNum, @aptNum, @ID)
+	>when the user clicks the done button go to the appointment form
+>send update notices
+	select email from employee where employee_ID in(select employee_ID from appt_guest where appointment_number = @aptNum)
+	>for each row: sendEmail(hrEmail,row.emailValue,"Change of Appointment details", "You are hereby informed of the following change: the appointment previously scheduled for dateOLD at starttimeOLD to endtimeOLD has been rescheduled to dateNEW at starttimeNEW to endtimeNEW")
+	>for each email in UNINVITED: sendEmail(hrEmail,uninvited.emailValue,"Change of Appointment details", "You are hereby informed of the following change: you are no longer scheduled for an appointment on dateOLD  starttimeOLD to endtimeOLD")
+	
